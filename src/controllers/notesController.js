@@ -3,6 +3,9 @@ import createHttpError from 'http-errors';
 
 export const getAllNotes = async (req, res) => {
   const notes = await Note.find();
+
+  console.log(notes);
+
   res.status(200).json(notes);
 };
 
