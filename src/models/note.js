@@ -16,6 +16,7 @@ const noteSchema = new Schema(
         'Health',
         'Important',
         'Todo',
+        'Shopping',
       ],
       default: 'Todo',
     },
