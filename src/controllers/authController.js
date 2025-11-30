@@ -7,9 +7,9 @@ import { Session } from '../models/session.js';
 export const registerUser = async (req, res) => {
   const { email, password } = req.body;
 
-  const existinUser = await User.findOne({ email });
+  const existingUser = await User.findOne({ email });
 
-  if (existinUser) {
+  if (existingUser) {
     throw createHttpError(400, 'Email is already in use');
   }
 
@@ -48,7 +48,7 @@ export const loginUser = async (req, res) => {
 
   setSessionCookies(res, newSession);
 
-  res.status(201).json(user);
+  res.status(200).json(user);
 };
 
 export const refreshUserSession = async (req, res) => {
@@ -66,7 +66,7 @@ export const refreshUserSession = async (req, res) => {
   const isSessionTokenExpired =
     new Date() > new Date(session.refreshTokenValidUntil);
 
-  if (!isSessionTokenExpired) {
+  if (isSessionTokenExpired) {
     throw createHttpError(401, 'Session token expired');
   }
 
@@ -91,5 +91,5 @@ export const logoutUser = async (req, res) => {
   res.clearCookie('refreshToken');
   res.clearCookie('sessionId');
 
-  res.status(200).json({ message: 'Logout successful' });
+  res.status(204).json();
 };

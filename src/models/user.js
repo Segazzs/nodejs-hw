@@ -3,8 +3,8 @@ import { Schema, model } from 'mongoose';
 export const userSchema = new Schema(
   {
     username: { type: String, required: false, trim: true },
-    email: { type: String, required: true, trim: true },
-    password: { type: String, required: true, min: 8 },
+    email: { type: String, required: true, trim: true, unique: true },
+    password: { type: String, required: true, minlength: 8 },
   },
   { timestamps: true },
 );
@@ -17,7 +17,7 @@ userSchema.pre('save', function (next) {
   next();
 });
 
-userSchema.method.toJSON = function () {
+userSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.password;
   return obj;
