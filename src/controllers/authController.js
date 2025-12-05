@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import handlebars from 'handlebars';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { sendMail } from '../utils/sendMail.js';
+import { sendEmail } from '../utils/sendMail.js';
 
 export const registerUser = async (req, res) => {
   const { email, password } = req.body;
@@ -125,14 +125,14 @@ export const requestResetEmail = async (req, res, next) => {
   });
 
   try {
-    sendMail({
+    await sendEmail({
       from: process.env.SMTP_FROM,
       to: email,
       subject: 'Reset your password',
       html,
     });
   } catch {
-    next(
+    return next(
       createHttpError(500, 'Failed to send the email, please try again later'),
     );
   }
@@ -146,7 +146,7 @@ export const resetPassword = async (req, res, next) => {
   try {
     payload = jwt.verify(token, process.env.JWT_SECRET);
   } catch {
-    next(createHttpError(401, 'Invalid or expired token'));
+    return next(createHttpError(401, 'Invalid or expired token'));
   }
 
   const user = await User.findOne({
@@ -155,7 +155,7 @@ export const resetPassword = async (req, res, next) => {
   });
 
   if (!user) {
-    next(createHttpError(404, 'User not found'));
+    return next(createHttpError(404, 'User not found'));
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
